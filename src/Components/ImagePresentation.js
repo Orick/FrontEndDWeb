@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Row, Col, Image, Grid } from 'react-bootstrap'
 
-class App extends Component {
+class ImagePresentation extends Component {
     render() {
         return (
             <Grid>
@@ -14,4 +14,4 @@ class App extends Component {
         );
     }
 }
-export default App;
+export default ImagePresentation;

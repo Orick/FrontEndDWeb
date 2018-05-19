@@ -24,21 +24,14 @@ class PageName extends Component {
                         </Navbar.Header>
                         <Navbar.Collapse>
                             <Nav>
-                                <NavItem>
-                                    <Link to="/">Inicio</Link>
-                                </NavItem>
-                                <NavItem>
-                                    <Link to="/simulador">Simulador</Link>
-                                </NavItem>
-                                <NavItem>
-                                    <Link to="/stats">Estadísticas</Link>
-                                </NavItem>
+                                <NavItem componentClass={Link} href="/" to="/">Inicio</NavItem>
+                                <NavItem componentClass={Link} href="/simulador" to="/simulador">Simulador</NavItem>
+                                <NavItem componentClass={Link} href="/stats" to="/stats">Estadísticas</NavItem>
                             </Nav>
                             <Nav pullRight>
                                 <NavItem>
                                     <Login/>
                                 </NavItem>
-
                                 <NavItem/>
                             </Nav>
                         </Navbar.Collapse>

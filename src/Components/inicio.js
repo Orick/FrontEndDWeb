@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import SearchBar from './searchBar';
 import ImageSearchBar from  './ImageSearchBar';
 
-class Summoner extends Component {
+class Inicio extends Component {
     render() {
         return (
             <div>
@@ -13,4 +13,4 @@ class Summoner extends Component {
     }
 }
 
-export default Summoner;
+export default Inicio;

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {Row, Col} from 'react-bootstrap';
+//import {Link} from 'react-router-dom';
 import '../css/bar.css';
 
 class SearchBar extends Component {
@@ -51,9 +52,12 @@ class SearchBar extends Component {
                             <option value="br1">BR</option>
                             <option value="na1">NA</option>
                         </select>
-                        <button onClick={()=>{this.searchSummoner();}}>
-                            <i className="fa fa-search"/>
-                        </button>
+
+                            <button onClick={()=>{this.searchSummoner();}}>
+                                <i className="fa fa-search"/>
+
+                            </button>
+
                     <br/>
                     Summoner: {summonerName}<br/>
                     Level: {level}

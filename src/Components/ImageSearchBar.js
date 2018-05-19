@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Row, Col, Image } from 'react-bootstrap';
 
 
-class App extends Component {
+class ImageSearchBar extends Component {
     render() {
         return (
             <Row>
@@ -15,5 +15,4 @@ class App extends Component {
     }
 }
 
-
-export default App;
+export default ImageSearchBar;
