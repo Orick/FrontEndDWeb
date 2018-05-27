@@ -2,6 +2,8 @@
     text-align:center;
 }
 
-.right-container{
-    right: 0 px;
+.left-container{
+    text-align:left;
+    padding-top: 4%;
+    padding-left: 5%;
 }
