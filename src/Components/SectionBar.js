@@ -7,6 +7,7 @@ import Simulador from './simulador';
 import Stats from './stats';
 import Inicio from './inicio';
 import store from "./redux/store";
+import Simulador2 from './simulador2';
 
 class SectionBar extends Component {
     constructor(props){
@@ -40,6 +41,7 @@ class SectionBar extends Component {
                             <Nav>
                                 <NavItem componentClass={Link} href="/" to="/">Inicio</NavItem>
                                 <NavItem componentClass={Link} href="/simulador" to="/simulador">Simulador</NavItem>
+                                <NavItem componentClass={Link} href="/simulador2" to="/simulador2">Simulador2</NavItem>
                                 <NavItem componentClass={Link} href="/stats" to="/stats">Estadísticas</NavItem>
                             </Nav>
                             <Login/>
@@ -48,6 +50,7 @@ class SectionBar extends Component {
 
                     <Route exact path="/" render={() => <Inicio logeado={logeado} summoner={summoner}/>} />
                     <Route path="/simulador" component={Simulador}/>
+                    <Route path="/simulador2" component={Simulador2}/>
                     <Route path="/summoner" component={Summoner}/>
                     <Route path="/stats" component={Stats} />
                 </Grid>
