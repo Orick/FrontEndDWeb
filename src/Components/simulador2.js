@@ -7,37 +7,37 @@ class Simulador2 extends Component {
         super(props);
 
         this.state = {
-            idchamp1: 0,
-            idchamp2: 0,
-            iditem11: 0,
-            iditem12: 0,
-            iditem13: 0,
-            iditem14: 0,
-            iditem15: 0,
-            iditem16: 0,
-            iditem21: 0,
-            iditem22: 0,
-            iditem23: 0,
-            iditem24: 0,
-            iditem25: 0,
-            iditem26: 0,
-            itemdata: null
+            attack: [],
+            recibe: [],
         };
+        this.calcularDamage = this.calcularDamage.bind(this);
     }
 
-    calcularDaño(champ1,champ2,iditem11,iditem12,iditem13,iditem14,iditem15,iditem16,iditem21,iditem22,iditem23,iditem24,iditem25,iditem26){
-        fetch('http://localhost:8000/simulador/attack/' + champ1 + '/' + iditem11 + '/' + iditem12 + '/' + iditem13 + '/' + iditem14 + '/' + iditem15 + '/' + iditem16)
+    calcularDamage(champ1,champ2,iditem11,iditem12,iditem13,iditem14,iditem15,iditem16,iditem21,iditem22,iditem23,iditem24,iditem25,iditem26){
+        fetch('http://localhost:8080/simulador/attack/' + champ1 + '/' + iditem11 + '/' + iditem12 + '/' + iditem13 + '/' + iditem14 + '/' + iditem15 + '/' + iditem16)
         .then(response => response.json())
-        .then(result => {
-            console.log(result)
+        .then(attack => {
+            this.setState({attack: attack.data});
+            fetch('http://localhost:8080/simulador/recibe/' + champ2 + '/' + iditem21 + '/' + iditem22 + '/' + iditem23 + '/' + iditem24 + '/' + iditem25 + '/' + iditem26)
+            .then(response => response.json())
+            .then(recibe => {
+                this.setState({recibe: recibe.data});
 
+            })
+            .catch(error => {
+                console.log("fetch: " + error)
+            });
+        })
+        .catch(error => {
+            console.log("fetch: " + error)
         });
+        return (this.state.attack[0] - this.state.recibe[0])
     }
     
     render() {
-        const {idchamp1, idchamp2, iditem11, iditem12, iditem13, iditem14, iditem15, iditem16, iditem21, iditem22, iditem23, iditem24, iditem25, iditem26} = this.state;
+        let a = this.calcularDamage(1,2,1001,0,0,0,0,0,0,0,1001,0,0,0)
         return (
-            <div> holi </div>
+            <div> {a} </div>
         );
     }
 }
