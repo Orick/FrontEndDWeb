@@ -17,11 +17,10 @@ class Simulador2 extends Component {
         fetch('http://localhost:8080/simulador/attack/' + champ1 + '/' + iditem11 + '/' + iditem12 + '/' + iditem13 + '/' + iditem14 + '/' + iditem15 + '/' + iditem16)
         .then(response => response.json())
         .then(attack => {
-            this.setState({attack: attack.data});
             fetch('http://localhost:8080/simulador/recibe/' + champ2 + '/' + iditem21 + '/' + iditem22 + '/' + iditem23 + '/' + iditem24 + '/' + iditem25 + '/' + iditem26)
             .then(response => response.json())
             .then(recibe => {
-                this.setState({recibe: recibe.data});
+                this.setState({recibe: recibe.data, attack: attack.data});
 
             })
             .catch(error => {
@@ -35,9 +34,13 @@ class Simulador2 extends Component {
     }
     
     render() {
-        let a = this.calcularDamage(1,2,1001,0,0,0,0,0,0,0,1001,0,0,0)
         return (
-            <div> {a} </div>
+            <div>
+                {this.state.attack[0] - this.state.recibe[0]}
+            <button onClick={()=> { this.calcularDamage(1,2,1001,0,0,0,0,0,0,0,1001,0,0,0) }}>
+                Calcular
+            </button>
+            </div>
         );
     }
 }
