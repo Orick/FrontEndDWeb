@@ -7,7 +7,7 @@ class Simulador extends Component {
         super(props);
 
         this.state = {
-            idchamp: [0, 0],
+            idchamp: [1, 2],
             urlchamp: ["", ""],
             boolshowchamp: [false, false],
             iditem: [[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0]],
@@ -16,7 +16,9 @@ class Simulador extends Component {
             champdata: [],
             itemdata: [],
             actualItemButton: [-1,-1],
-            actualChampButton: -1
+            actualChampButton: -1,
+            attack: [],
+            recibe: []
         };
 
         this.showItem = this.showItem.bind(this);
@@ -25,6 +27,26 @@ class Simulador extends Component {
         this.renderMenuItem = this.renderMenuItem.bind(this);
         this.selectItem = this.selectItem.bind(this);
         this.getChampions = this.getChampions.bind(this);
+        this.calcularDamage = this.calcularDamage.bind(this);
+    }
+    calcularDamage(champ1,champ2,iditem11,iditem12,iditem13,iditem14,iditem15,iditem16,iditem21,iditem22,iditem23,iditem24,iditem25,iditem26){
+        fetch('http://localhost:8080/simulador/attack/' + champ1 + '/' + iditem11 + '/' + iditem12 + '/' + iditem13 + '/' + iditem14 + '/' + iditem15 + '/' + iditem16)
+        .then(response => response.json())
+        .then(attack => {
+            fetch('http://localhost:8080/simulador/recibe/' + champ2 + '/' + iditem21 + '/' + iditem22 + '/' + iditem23 + '/' + iditem24 + '/' + iditem25 + '/' + iditem26)
+            .then(response => response.json())
+            .then(recibe => {
+                this.setState({recibe: recibe.data, attack: attack.data});
+
+            })
+            .catch(error => {
+                console.log("fetch: " + error)
+            });
+        })
+        .catch(error => {
+            console.log("fetch: " + error)
+        });
+        return (this.state.attack[0] - this.state.recibe[0])
     }
 
     closeItem(i, j) {
@@ -96,6 +118,7 @@ class Simulador extends Component {
         const CHAMPIONS = this.getChampions();
         const {boolshowitem,itemdata} = this.state;
         return (
+        <div>
             <Row>
                 {console.log(this.state.actualItemButton)}
                 <Col sm={6} md={6} lg={6}>
@@ -302,6 +325,13 @@ class Simulador extends Component {
 
                 </Col>
             </Row>
+            
+                {this.state.attack[0] - this.state.recibe[0]}
+            <button onClick={()=> { this.calcularDamage(this.state.idchamp[0],this.state.idchamp[1],this.state.iditem[0][0],this.state.iditem[0][1],this.state.iditem[0][2],this.state.iditem[0][3],this.state.iditem[0][4],this.state.iditem[0][5],this.state.iditem[1][0],this.state.iditem[1][1],this.state.iditem[1][2],this.state.iditem[1][3],this.state.iditem[1][4],this.state.iditem[1][5]) }}>
+                Calcular
+            </button>
+            
+        </div>
         );
     }
 }
