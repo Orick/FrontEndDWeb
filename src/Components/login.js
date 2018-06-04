@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { Modal } from 'react-bootstrap';
 import firebase from '../config/firebaseConfig';
 import store from './redux/store';
-import {Nav, NavItem} from 'react-bootstrap';
+import {Nav, NavItem, Button} from 'react-bootstrap';
+import '../css/bar.css';
 
 class Login extends Component {
     constructor(props){
@@ -22,7 +23,8 @@ class Login extends Component {
             showCrear: false,
             textErrorCrear:'',
             logeado : store.getState().logeado,
-            summoner: store.getState().summoner
+            summoner: store.getState().summoner,
+            email: ''
         };
         this.loginForm = this.loginForm.bind(this);
         this.loginShow = this.loginShow.bind(this);
@@ -109,8 +111,15 @@ class Login extends Component {
 
     crearUsuario(){
         const emailCrear = this.refs.emailCrear.value;
+
         const passwordCrear = this.refs.passwordCrear.value;
         if(emailCrear && passwordCrear){
+
+            this.setState({
+                visibleCrear:'visible',
+                textErrorCrear: 'Cargando..'
+            });
+
             if(Login.validateEmail(emailCrear)){
                 fetch('http://localhost:8080/assocciatedAccounts/create',{
                     method: 'POST',
@@ -144,8 +153,14 @@ class Login extends Component {
 
 
     cambiarContrasena(){
-        const emailUpdate = this.refs.emailUpdate.value;
+        const emailUpdate = this.state.email;
         if(emailUpdate){
+
+            this.setState({
+                visibleUpdate:'visible',
+                textErrorUpdate: 'Cargando..'
+            });
+
             if(Login.validateEmail(emailUpdate)){
                 const clase = this;
                 firebase.auth().sendPasswordResetEmail(emailUpdate).then(function() {
@@ -175,6 +190,10 @@ class Login extends Component {
     recuperarContrasena(){
         const emailRecuperar = this.refs.emailRecuperar.value;
         if(emailRecuperar){
+            this.setState({
+                visibleRecuperar:'visible',
+                textErrorRecuperar: 'Cargando..'
+            });
             if(Login.validateEmail(emailRecuperar)){
                 const clase = this;
                 firebase.auth().sendPasswordResetEmail(emailRecuperar).then(function() {
@@ -228,9 +247,9 @@ class Login extends Component {
         const email = this.refs.email.value;
         if( password && email){
             this.setState({
-                visibleM: 'hidden'
+                visibleM: 'visible',
+                textError: 'Cargando..'
             });
-
             if( Login.validateEmail(email) ){
                 firebase.auth().signInWithEmailAndPassword(email,password)
                 .then( user => {
@@ -291,19 +310,14 @@ class Login extends Component {
                                 </Modal.Header>
 
                                 <Modal.Body>
-                                    <input
-                                        type="text"
-                                        ref={'emailUpdate'}
-                                        placeholder={'Email..'}
-                                        defaultValue={email}
-                                        disabled
-                                    /><br/>
-                                    <button onClick={()=>{this.cambiarContrasena()}}>
+                                    <h3>{email}</h3>
+                                    <br/>
+                                    <Button  style={{marginTop:'5px'}} onClick={()=>{this.cambiarContrasena()}}>
                                         Cambiar
-                                    </button>
+                                    </Button>
                                     <br/>
                                     <div>
-                                        <p style={{visibility:visibleUpdate}}> {textErrorUpdate} </p>
+                                        <p className="textError" style={{visibility:visibleUpdate}}> {textErrorUpdate} </p>
                                     </div>
                                 </Modal.Body>
                             </Modal>
@@ -317,7 +331,7 @@ class Login extends Component {
                     <Nav pullRight>
                         <NavItem>
                             <p onClick={() => this.loginShow()} style={{margin: '0 0 0px'}}>Login</p>
-                            <Modal show={showLogin} onHide={() => this.loginClose()}>
+                            <Modal  show={showLogin} onHide={() => this.loginClose()}>
                                 <Modal.Header closeButton>
                                     <Modal.Title>Login</Modal.Title>
                                 </Modal.Header>
@@ -337,7 +351,6 @@ class Login extends Component {
                                         />
                                     </div>
                                     <div>
-
                                         <a onClick={()=>{this.recuperarShow()}}>Recuperar contraseña</a>
                                         <Modal show={showRecuperar} onHide={() => this.recuperarClose()}>
                                             <Modal.Header closeButton>
@@ -349,12 +362,13 @@ class Login extends Component {
                                                     ref="emailRecuperar"
                                                     placeholder={'Email..'}
                                                 />
-                                                <button onClick={()=>{this.recuperarContrasena()}}>
+                                                <br/>
+                                                <Button style={{marginTop:"5px"}} bsSize="small" onClick={()=>{this.recuperarContrasena()}}>
                                                     Recuperar
-                                                </button>
+                                                </Button>
                                                 <br/>
                                                 <div>
-                                                    <p style={{visibility:visibleRecuperar}}> {textErrorRecuperar} </p>
+                                                    <p className="textError" style={{visibility:visibleRecuperar}}> {textErrorRecuperar} </p>
                                                 </div>
                                             </Modal.Body>
                                         </Modal>
@@ -380,24 +394,24 @@ class Login extends Component {
                                                     ref="passwordCrear"
                                                 />
                                                 <br/>
-                                                <button onClick={()=>{this.crearUsuario()}}>
+                                                 <Button style={{marginTop:"5px"}} bsSize="small" onClick={()=>{this.crearUsuario()}}>
                                                     Crear
-                                                </button>
+                                                </Button>
                                                 <br/>
                                                 <div>
-                                                    <p style={{visibility:visibleCrear}}> {textErrorCrear} </p>
+                                                    <p className="textError"  style={{visibility:visibleCrear}}> {textErrorCrear} </p>
                                                 </div>
                                             </Modal.Body>
                                         </Modal>
 
                                     </div>
-                                    <div>
-                                        <button onClick={()=>{ this.loginForm(); }}>
+                                    <div style={{paddingTop:'3px'}}>
+                                        <Button bsSize="small" onClick={()=>{ this.loginForm(); }}>
                                             <span>Login</span>
-                                        </button>
+                                        </Button>
 
                                         <div>
-                                            <p style={{visibility:visibleM}}> {textError} </p>
+                                            <p className="textError" style={{visibility:visibleM}}> {textError} </p>
                                         </div>
                                     </div>
                                 </Modal.Body>

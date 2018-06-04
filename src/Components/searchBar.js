@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Row, Col} from 'react-bootstrap';
+import {Row, Col, Button} from 'react-bootstrap';
 import { Redirect } from 'react-router-dom';
 import '../css/bar.css';
 //import store from './redux/store';
@@ -11,20 +11,29 @@ class SearchBar extends Component {
         this.state = {
             server:'la2',
             redirect : false,
-            mostrarError: false,
             msgError : '',
             data : {}
         };
 
         this.searchSummoner = this.searchSummoner.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.pressEnter = this.pressEnter.bind(this);
     }
 
     handleChange(event) {
         this.setState({server: event.target.value});
     }
 
+    pressEnter(event){
+        if(event.key === 'Enter') {
+            this.searchSummoner();
+        }
+    }
     searchSummoner(){
+        this.setState({
+            msgError :'Cargando..'
+        });
+
         let data = {};
         const summoner = this.refs.summoner.value;
         const server = this.state.server;
@@ -59,7 +68,6 @@ class SearchBar extends Component {
                                 .catch( errorMatchListFinal => {
                                     console.log("fetch error : ", errorMatchListFinal );
                                     this.setState({
-                                        mostrarError: true,
                                         msgError :'Error inesperado'
                                     });
                                 });
@@ -67,7 +75,6 @@ class SearchBar extends Component {
                             .catch( errorMatchList => {
                                 console.log("fetch error : ", errorMatchList);
                                 this.setState({
-                                    mostrarError: true,
                                     msgError :'Error inesperado'
                                 });
                             });
@@ -75,13 +82,11 @@ class SearchBar extends Component {
                         .catch( errorLeague => {
                             console.log("fetch error : ", errorLeague);
                             this.setState({
-                                mostrarError: true,
                                 msgError :'Error inesperado'
                             });
                         });
                     }else{
                         this.setState({
-                            mostrarError: true,
                             msgError :'Summoner no encontrado'
                         });
                     }
@@ -89,20 +94,17 @@ class SearchBar extends Component {
                 .catch( error => {
                     console.log("fetch error : ", error);
                     this.setState({
-                        mostrarError: true,
                         msgError :'Error inesperado'
                     });
                 });
         }else{
             this.setState({
-                mostrarError: true,
                 msgError :'Ingrese Summoner para buscar'
             });
         }
     }
     render() {
-        //<Redirect to='/summoner' />
-        const {redirect, mostrarError, msgError, data} = this.state;
+        const {redirect, msgError, data} = this.state;
         return (
             <Row>
                 {
@@ -114,21 +116,21 @@ class SearchBar extends Component {
                         :
                         null
                 }
-
-                <Col sm={12} md={12} lg={12}  className="search-container">
-                        <input type="text" ref="summoner" placeholder="Summoner.." name="search"/>
-                        <select value={this.state.server} onChange={this.handleChange}>
+                <Col sm={12} md={12} lg={12}>
+                    <div className="search-container">
+                        <input type="text" ref="summoner" onKeyDown={this.pressEnter} className="inputBar" placeholder="Summoner.." name="search"/>
+                        <select value={this.state.server} className='serverButton'  onChange={this.handleChange}>
                             <option value="la2">LAS</option>
                             <option value="la1">LAN</option>
                             <option value="br1">BR</option>
                             <option value="na1">NA</option>
                         </select>
-                        <button onClick={()=>{this.searchSummoner();}}>
+                        <Button bsSize="xs" className="ButtonBar" onClick={()=>{this.searchSummoner();}}>
                             <i className="fa fa-search"/>
-                        </button>
-                    <br/>
-                    {mostrarError ? <h3>{msgError}</h3> : null }
-
+                        </Button>
+                        <br/>
+                        <h3 className="infoText">{msgError}</h3>
+                    </div>
                 </Col>
             </Row>
         );

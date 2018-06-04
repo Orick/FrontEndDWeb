@@ -1,5 +1,31 @@
 .search-container{
-    text-align:center;
+    width: 250px;
+    position: relative;
+    margin: 0 auto;
+
+}
+
+.inputBar{
+    display: block;
+    width: 100%;
+    height: 30px;
+    border: none;
+    box-sizing: border-box;
+    outline: none;
+    padding: 15px 90px 15px 6px;
+}
+
+.ButtonBar{
+    position: absolute;
+    top: 4px;
+    right: 0px;
+    margin: 0px 5px 0 0;
+}
+
+.serverButton{
+    position: absolute;
+    top: 4px;
+    right: 35px;
 }
 
 .image-search{
@@ -8,4 +34,18 @@
     margin-left: auto;
     margin-right: auto;
     width: 11%;
+}
+
+.infoText{
+    height: 50px;
+    width: 250px;
+    text-align:center;
+    margin-top: 0;
+}
+
+.textError{
+    margin-top: 6px;
+    font-size: 16px;
+    font-family: sans-serif;
+    margin-bottom: 0px;
 }

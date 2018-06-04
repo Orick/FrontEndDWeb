@@ -32,9 +32,7 @@ class SectionBar extends Component {
                 <Grid style={{paddingRight: '0px',paddingLeft: '0px'}}>
                     <Navbar inverse collapseOnSelect>
                         <Navbar.Header>
-                            <Navbar.Brand>
-                                Op.wp
-                            </Navbar.Brand>
+                            <Navbar.Brand> League of Build </Navbar.Brand>
                             <Navbar.Toggle />
                         </Navbar.Header>
                         <Navbar.Collapse>

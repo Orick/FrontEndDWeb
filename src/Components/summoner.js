@@ -14,7 +14,8 @@ class Summoner extends Component {
             link: {},
             dataLoad: false,
             mostrarText: false,
-            textButton: ''
+            textButton: '',
+            errorDataLoad: 'Cargando'
         };
         this.serguirSummoner = this.serguirSummoner.bind(this);
         this.actualizarSummoner = this.actualizarSummoner.bind(this);
@@ -39,17 +40,53 @@ class Summoner extends Component {
                     result.map(el => {
                         links[el.idChamp] = el.link
                     });
-                    this.setState({
-                        summoner : this.props.location.data.data.summoner,
-                        league : this.props.location.data.data.league,
-                        matchlist: this.props.location.data.data.matchlist,
-                        dataLoad : true,
-                        link:links
+
+                    // let listSummoner = [];
+                    // this.props.location.data.data.summoner.map(summoner =>{
+                    // });
+                    let summoner = this.props.location.data.data.summoner;
+                    let load = true;
+                    // if( !(summoner.accountId && summoner.name && summoner.profileIconId && summoner.server && summoner.summonerId && summoner.summonerLevel)){
+                    //     load = true;
+                    // }
+                    let league = this.props.location.data.data.league;
+                    // if(!( league.flexLosses && league.flexRank && league.flexTier && league.flexWins && league.soloLosses && league.soloRank && league.soloTier && league.soloWins ) ){
+                    //     load = true;
+                    // }
+
+                    let propMatchlist = this.props.location.data.data.matchlist;
+                    let matchlist = [];
+                    propMatchlist.map( match => {
+                        if( match.champion && match.lane && match.role && match.listMatch[0].kills && match.listMatch[0].deaths && match.listMatch[0].assists && match.listMatch[0].item0 && match.listMatch[0].item1 && match.listMatch[0].item2 && match.listMatch[0].item3 && match.listMatch[0].item4 && match.listMatch[0].item5 && match.listMatch[0].item6 && match.listMatch[0].win){
+                            matchlist.push(match);
+                        }
                     });
+                    if( load ){
+                        this.setState({
+                            summoner : summoner,
+                            league : league,
+                            matchlist: matchlist,
+                            dataLoad : true,
+                            link:links
+                        });
+                    }else{
+                        this.setState({
+                            dataLoad: false,
+                            errorDataLoad : 'Intente nuevamente'
+                        });
+                    }
+
                 })
                 .catch(error => {
                    console.log('Error promise', error);
                 });
+        }else{
+            console.log('AAAA');
+            this.setState({
+                dataLoad: false,
+                errorDataLoad : 'Intente nuevamente'
+            });
+
         }
 
     }
@@ -80,8 +117,10 @@ class Summoner extends Component {
             return 'Normal';
         }else if(idQueue === 450 ){
             return 'ARAM';
-        }else if(idQueue === 440 ){
+        }else if(idQueue === 440 ) {
             return 'Flex';
+        }else if(idQueue === 900){
+            return 'URF'
         }else{
             return 'SoloQ';
         }
@@ -290,7 +329,7 @@ class Summoner extends Component {
     }
 
     render() {
-        const {dataLoad, summoner, league, matchlist, link, mostrarText, textButton} = this.state;
+        const {dataLoad, summoner, league, matchlist, link, mostrarText, textButton, errorDataLoad} = this.state;
         return (
 <div>
     {dataLoad ?
@@ -415,7 +454,9 @@ class Summoner extends Component {
     </Row>
 </Grid>
     :
-        'Cargando'
+        <p>
+            {errorDataLoad}
+        </p>
     }
 </div>
         );

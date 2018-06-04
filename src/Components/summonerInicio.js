@@ -2,11 +2,19 @@ import React, { Component } from 'react';
 import { Grid, Row, Col, Panel, ListGroup, ListGroupItem, Button, Image } from 'react-bootstrap';
 import firebase from '../config/firebaseConfig';
 import store from './redux/store';
+import { Redirect } from 'react-router-dom';
 
 
 class summonerInicio extends Component {
     constructor(props){
         super(props);
+
+        this.state = {
+            redirect: false,
+            data: {},
+            textCarga: 'Summoners que sigo'
+        };
+
         this.borrorSeguir = this.borrorSeguir.bind(this);
         this.updateSummonerList = this.updateSummonerList.bind(this);
         this.clickSummoner = this.clickSummoner.bind(this);
@@ -57,19 +65,77 @@ class summonerInicio extends Component {
             });
     }
 
-    clickSummoner(summoner){
-        console.log(summoner);
+    clickSummoner(summoner, server){
+        this.setState({
+            textCarga: 'Cargando perfil de ' + summoner
+        });
+
+        let data = {};
+        fetch('http://localhost:8080/summoner/find/'+server+'/'+summoner)
+        .then(response => response.json())
+        .then(resultSummoner => {
+            data.summoner = resultSummoner.data;
+            if(resultSummoner.status === 1){
+
+                fetch('http://localhost:8080/league/find/'+server+'/'+resultSummoner.data.summonerId)
+                .then(responseLeague => responseLeague.json())
+                .then(resultLeague => {
+                    data.league = resultLeague.data;
+                    //http://localhost:8080/matchlist/find/la2/118550
+
+                    fetch('http://localhost:8080/matchlist/find/'+server+'/'+resultSummoner.data.accountId)
+                    .then(responseMatchList=> responseMatchList.json())
+                    .then(resultMatchList=> {
+                        // /allMatch/:server/:accountId
+
+                        fetch('http://localhost:8080/matchlist/allMatch/'+server+'/'+resultSummoner.data.accountId)
+                        .then(responseMatchListFinal => responseMatchListFinal.json())
+                        .then(resultMatchListFinal => {
+                            data.matchlist = resultMatchListFinal.data[0].sumlist;
+                            console.log(data);
+                            this.setState({
+                                redirect:true,
+                                data: data
+                            });
+                        })
+                        .catch( errorMatchListFinal => {
+                            console.log("fetch error : ", errorMatchListFinal );
+                        });
+                    })
+                    .catch( errorMatchList => {
+                        console.log("fetch error : ", errorMatchList);
+                    });
+                })
+                .catch( errorLeague => {
+                    console.log("fetch error : ", errorLeague);
+                });
+            }
+        })
+        .catch( error => {
+            console.log("fetch error : ", error);
+        });
     }
     render() {
         const { summoner } = this.props;
+        const {redirect, data, textCarga} = this.state;
         return (
 
                 <Grid style={{marginTop: '40px'}}>
+                    {
+                        redirect ?
+                            <Redirect to={{
+                                pathname: '/summoner',
+                                data: {data:data}}}
+                            />
+                            :
+                            null
+                    }
+
                     { summoner.length !== 0 ?
                         <Row>
                             <Col sm={12} md={12} lg={12}>
                                 <Panel bsStyle="info">
-                                    <Panel.Heading> Summoners que sigo </Panel.Heading>
+                                    <Panel.Heading> {textCarga} </Panel.Heading>
                                         <ListGroup>
                                             {
                                                 summoner.map((data, index)=> {
@@ -79,7 +145,7 @@ class summonerInicio extends Component {
                                                                 data.summonerLeague.map((d,ind )=> {
                                                                     return (
                                                                         <div key={ind}>
-                                                                            <Grid  onClick={()=>{this.clickSummoner(data.name)}}>
+                                                                            <Grid  onClick={()=>{this.clickSummoner(data.name,data.server)}}>
                                                                                 <Row>
                                                                                     <Col sm={2} md={2} lg={2} style={{textAlign: 'center', marginTop:'6px'}}>
                                                                                         <Image
