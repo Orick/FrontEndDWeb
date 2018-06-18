@@ -7,7 +7,7 @@ class Simulador extends Component {
         super(props);
 
         this.state = {
-            idchamp: [1, 2],
+            idchamp: [0, 0],
             urlchamp: ["", ""],
             boolshowchamp: [false, false],
             iditem: [[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0]],
@@ -23,10 +23,13 @@ class Simulador extends Component {
 
         this.showItem = this.showItem.bind(this);
         this.closeItem = this.closeItem.bind(this);
+        this.showChamp = this.showChamp.bind(this);
+        this.closeChamp = this.closeChamp.bind(this);
         this.renderMenuChamp = this.renderMenuChamp.bind(this);
+        this.renderMenuChamp1 = this.renderMenuChamp1.bind(this);
         this.renderMenuItem = this.renderMenuItem.bind(this);
         this.selectItem = this.selectItem.bind(this);
-        this.getChampions = this.getChampions.bind(this);
+        this.selectChamp = this.selectChamp.bind(this);
         this.calcularDamage = this.calcularDamage.bind(this);
     }
     calcularDamage(champ1,champ2,iditem11,iditem12,iditem13,iditem14,iditem15,iditem16,iditem21,iditem22,iditem23,iditem24,iditem25,iditem26){
@@ -55,13 +58,25 @@ class Simulador extends Component {
         this.setState({ boolshowitem: items, actualItemButton: [-1,-1] });
     }
 
+    closeChamp(i) {
+        let champs = this.state.boolshowchamp;
+        champs[i] = false;
+        this.setState({ boolshowchamp: champs, actualChampButton: -1 });
+    }
+
     showItem(i, j) {
         let items = this.state.boolshowitem;
         items[i][j] = true;
         this.setState({ boolshowitem: items, actualItemButton: [i,j] });
     }
 
-    renderMenuChamp(champ, i) {
+    showChamp(i) {
+        let champs = this.state.boolshowchamp;
+        champs[i] = true;
+        this.setState({ boolshowchamp: champs, actualChampButton: i });
+    }
+
+    renderMenuChamp1(champ, i) {
         return (
             <MenuItem eventKey={champ[0]}>{champ[1]}</MenuItem>
         );
@@ -83,6 +98,22 @@ class Simulador extends Component {
         );
     }
 
+    renderMenuChamp(champ) {
+        const popover = (
+            <Popover id={champ[0]}>
+              {champ[1]}
+            </Popover>
+        );
+
+        const {actualChampButton} = this.state;
+        
+        return (
+            <OverlayTrigger trigger={['hover', 'focus']} placement="left" overlay={popover}>
+            <Image src={'http://ddragon.leagueoflegends.com/cdn/8.10.1/img/champion/' + champ[2]} rounded responsive onClick={()=>{this.selectChamp(champ[0], 'http://ddragon.leagueoflegends.com/cdn/8.10.1/img/champion/' + champ[2], actualChampButton)}}/>
+            </OverlayTrigger>
+        );
+    }
+
     selectItem(id, url, i, j){
         let {iditem, urlitem} = this.state;
         iditem[i][j] = id;
@@ -96,9 +127,17 @@ class Simulador extends Component {
         console.log(this.state.urlitem);
     }
 
-    getChampions(){
-        const champs = [[50, 'Anie'], [14 ,'Warwick'], [25 ,'Urgot'], [10 ,'Miss Fortune'], [85 ,'Rexai']];
-        return (champs);
+    selectChamp(id, url, i){
+        let {idchamp, urlchamp} = this.state;
+        idchamp[i] = id;
+        urlchamp[i] = url;
+        this.setState({
+            idchamp: idchamp,
+            urlchamp: urlchamp
+        });
+        this.closeChamp(i);
+        console.log(this.state.idchamp);
+        console.log(this.state.urlchamp);
     }
 
     componentDidMount(){
@@ -112,22 +151,46 @@ class Simulador extends Component {
         .catch( error => {
             console.log("fectch error : ", error);
         });
+
+        fetch('http://localhost:8080/champions/data/basic')
+        .then(response => response.json())
+        .then(result => {
+            this.setState({
+                champdata: result.data
+            });
+        })
+        .catch( error => {
+            console.log("fectch error : ", error);
+        });
     }
 
     render() {
-        const CHAMPIONS = this.getChampions();
-        const {boolshowitem,itemdata} = this.state;
+        const {boolshowchamp,boolshowitem,itemdata,champdata} = this.state;
         return (
         <div>
             <Row>
                 {console.log(this.state.actualItemButton)}
                 <Col sm={6} md={6} lg={6}>
                     
-                    <Row className="center-container">
-                    <SplitButton title="Campeon 1">
-                        {CHAMPIONS.map(this.renderMenuChamp)}
-                    </SplitButton>
+                <Row className="left-container">
+                        <Col sm={0} md={0} lg={0}>
+                            <Button bsSize="large" onClick={()=>{this.showChamp(0)}}> Campeon 1 </Button>
+                        </Col>
+                        <Col sm={0} md={0} lg={0}>
+                            <Image src={this.state.urlchamp} rounded responsive/>
+                        </Col>
                     </Row>
+                        <Modal show={boolshowchamp[0]} onHide={()=>{this.closeChamp(0)}}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>Campeon 1</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            {champdata.map(this.renderMenuChamp)}
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button onClick={()=>{this.closeChamp(0)}}>Cerrar</Button>
+                        </Modal.Footer>
+                        </Modal>
 
                     <Row className="left-container">
                         <Col sm={0} md={0} lg={0}>
@@ -227,11 +290,25 @@ class Simulador extends Component {
                 </Col>
                 <Col sm={6} md={6} lg={6}>
 
-                    <Row className="center-container">
-                    <SplitButton title="Campeon 2">
-                        {CHAMPIONS.map(this.renderMenuChamp)}
-                    </SplitButton>
+                    <Row className="left-container">
+                        <Col sm={0} md={0} lg={0}>
+                            <Button bsSize="large" onClick={()=>{this.showChamp(1)}}> Campeon 2 </Button>
+                        </Col>
+                        <Col sm={0} md={0} lg={0}>
+                            <Image src={this.state.urlchamp} rounded responsive/>
+                        </Col>
                     </Row>
+                        <Modal show={boolshowchamp[1]} onHide={()=>{this.closeChamp(1)}}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>Campeon 2</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            {champdata.map(this.renderMenuChamp)}
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button onClick={()=>{this.closeChamp(1)}}>Cerrar</Button>
+                        </Modal.Footer>
+                        </Modal>
 
                     <Row className="left-container">
                         <Button bsSize="large" onClick={()=>{this.showItem(1,0)}}> Item 1 </Button>
