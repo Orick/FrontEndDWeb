@@ -164,7 +164,7 @@ class Simulador extends Component {
                 fetch('http://localhost:8080/builds/',{
                     method: 'POST',
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                    body: "iduser="+Token+'&name='+this.state.nameBuild+'&idchamp1='+this.state.idchamp[0]+'&idchamp2='+this.state.idchamp[1]+'&iditem11='+this.state.iditem[0][0]+'&iditem12='+this.state.iditem[0][1]+'&iditem13='+this.state.iditem[0][2]+'&iditem14='+this.state.iditem[0][3]+'&iditem15='+this.state.iditem[0][4]+'&iditem16='+this.state.iditem[0][5]+'&iditem21='+this.state.iditem[1][0]+'&iditem22='+this.state.iditem[1][1]+'&iditem23='+this.state.iditem[1][2]+'&iditem24='+this.state.iditem[1][3]+'&iditem25='+this.state.iditem[1][4]+'&iditem26='+this.state.iditem[1][5]
+                    body: "iduser="+user.uid+'&name='+this.state.nameBuild+'&idchamp1='+this.state.idchamp[0]+'&idchamp2='+this.state.idchamp[1]+'&iditem11='+this.state.iditem[0][0]+'&iditem12='+this.state.iditem[0][1]+'&iditem13='+this.state.iditem[0][2]+'&iditem14='+this.state.iditem[0][3]+'&iditem15='+this.state.iditem[0][4]+'&iditem16='+this.state.iditem[0][5]+'&iditem21='+this.state.iditem[1][0]+'&iditem22='+this.state.iditem[1][1]+'&iditem23='+this.state.iditem[1][2]+'&iditem24='+this.state.iditem[1][3]+'&iditem25='+this.state.iditem[1][4]+'&iditem26='+this.state.iditem[1][5]
                 })
                 .then(res => res.json())
                 .then(result => {
