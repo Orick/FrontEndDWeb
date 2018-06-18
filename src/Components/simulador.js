@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import {Row, Col, SplitButton, MenuItem, Modal, Button, Image, Popover, OverlayTrigger} from 'react-bootstrap';
+import {Row, Col, MenuItem, Modal, Button, Image, Popover, OverlayTrigger, FormGroup, ControlLabel, HelpBlock,FormControl} from 'react-bootstrap';
+import firebase from '../config/firebaseConfig';
 import '../css/simulador.css'; 
 
 class Simulador extends Component {
@@ -7,8 +8,8 @@ class Simulador extends Component {
         super(props);
 
         this.state = {
-            idchamp: [0, 0],
-            urlchamp: ["", ""],
+            idchamp: [1, 2],
+            urlchamp: ["http://ddragon.leagueoflegends.com/cdn/8.10.1/img/champion/Annie.png", "http://ddragon.leagueoflegends.com/cdn/8.10.1/img/champion/Olaf.png"],
             boolshowchamp: [false, false],
             iditem: [[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0]],
             urlitem: [["", "", "", "", "", ""],["", "", "", "", "", ""]],
@@ -18,7 +19,9 @@ class Simulador extends Component {
             actualItemButton: [-1,-1],
             actualChampButton: -1,
             attack: [],
-            recibe: []
+            recibe: [],
+            showBuildi: false,
+            nameBuild: "",
         };
 
         this.showItem = this.showItem.bind(this);
@@ -31,6 +34,11 @@ class Simulador extends Component {
         this.selectItem = this.selectItem.bind(this);
         this.selectChamp = this.selectChamp.bind(this);
         this.calcularDamage = this.calcularDamage.bind(this);
+        this.regirtrarBuild = this.regirtrarBuild.bind(this);
+        this.saveBuildButton = this.saveBuildButton.bind(this);
+        this.closeBuild = this.closeBuild.bind(this);
+        this.showBuild = this.showBuild.bind(this);
+        this.nameChange = this.nameChange.bind(this);
     }
     calcularDamage(champ1,champ2,iditem11,iditem12,iditem13,iditem14,iditem15,iditem16,iditem21,iditem22,iditem23,iditem24,iditem25,iditem26){
         fetch('http://localhost:8080/simulador/attack/' + champ1 + '/' + iditem11 + '/' + iditem12 + '/' + iditem13 + '/' + iditem14 + '/' + iditem15 + '/' + iditem16)
@@ -74,6 +82,14 @@ class Simulador extends Component {
         let champs = this.state.boolshowchamp;
         champs[i] = true;
         this.setState({ boolshowchamp: champs, actualChampButton: i });
+    }
+
+    closeBuild() {
+        this.setState({ showBuildi: false});
+    }
+
+    showBuild() {
+        this.setState({ showBuildi: true});
     }
 
     renderMenuChamp1(champ, i) {
@@ -140,6 +156,77 @@ class Simulador extends Component {
         console.log(this.state.urlchamp);
     }
 
+    regirtrarBuild(){
+        let user = firebase.auth().currentUser;
+        if (user) {
+            user.getIdToken(true)
+            .then(Token =>{
+                fetch('http://localhost:8080/builds/',{
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: "iduser="+Token+'&name='+this.state.nameBuild+'&idchamp1='+this.state.idchamp[0]+'&idchamp2='+this.state.idchamp[1]+'&iditem11='+this.state.iditem[0][0]+'&iditem12='+this.state.iditem[0][1]+'&iditem13='+this.state.iditem[0][2]+'&iditem14='+this.state.iditem[0][3]+'&iditem15='+this.state.iditem[0][4]+'&iditem16='+this.state.iditem[0][5]+'&iditem21='+this.state.iditem[1][0]+'&iditem22='+this.state.iditem[1][1]+'&iditem23='+this.state.iditem[1][2]+'&iditem24='+this.state.iditem[1][3]+'&iditem25='+this.state.iditem[1][4]+'&iditem26='+this.state.iditem[1][5]
+                })
+                .then(res => res.json())
+                .then(result => {
+                    this.closeBuild();
+                })
+                .catch( error => {
+                    console.log(error);
+                });
+            })
+            .catch(error=>{
+            });
+        }
+    }
+
+    getValidationState() {
+        const length = this.state.nameBuild.length;
+        if (length > 1) return 'success';
+        else if (length > 0) return 'error';
+        return null;
+    }
+    
+    nameChange(e) {
+        this.setState({ nameBuild: e.target.value });
+    }
+    
+    saveBuildButton(){
+        let user = firebase.auth().currentUser;
+        if (user) {
+            return(
+                <div>
+                <Button bsSize="large" onClick={()=>{this.showBuild()}}> Guardar Build </Button>
+                <Modal show={this.state.showBuildi} onHide={()=>{this.closeBuild()}}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>Builds</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                        <form>
+                            <FormGroup
+                            controlId="formBasicText"
+                            validationState={this.getValidationState()}
+                            >
+                            <ControlLabel>Nombre Build</ControlLabel>
+                            <FormControl
+                                type="text"
+                                value={this.state.nameBuild}
+                                placeholder="Ingrese un nombre"
+                                onChange={this.nameChange}
+                            />
+                            <FormControl.Feedback />
+                            </FormGroup>
+                        </form>
+                            <Button bsSize="large" onClick={()=>{this.regirtrarBuild()}}> Guardar Build </Button>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button onClick={()=>{this.closeBuild()}}>Cerrar</Button>
+                        </Modal.Footer>
+                        </Modal>
+                </div>
+            );
+        }
+    }
+
     componentDidMount(){
         fetch('http://localhost:8080/items/data/basic')
         .then(response => response.json())
@@ -169,17 +256,22 @@ class Simulador extends Component {
         return (
         <div>
             <Row>
+                <Col classname='right-container' sm={6} md={6} lg={6}>
+                    {this.saveBuildButton()}
+                </Col>
+                <Col classname='left-container' sm={6} md={6} lg={6}>
+                </Col>
+            </Row>
+            <Row>
                 {console.log(this.state.actualItemButton)}
                 <Col sm={6} md={6} lg={6}>
                     
                 <Row className="left-container">
-                        <Col sm={0} md={0} lg={0}>
-                            <Button bsSize="large" onClick={()=>{this.showChamp(0)}}> Campeon 1 </Button>
-                        </Col>
-                        <Col sm={0} md={0} lg={0}>
-                            <Image src={this.state.urlchamp} rounded responsive/>
-                        </Col>
-                    </Row>
+                    <Col sm={0} md={0} lg={0}>
+                        <Button bsSize="large" onClick={()=>{this.showChamp(0)}}> Campeon 1 </Button>
+                        <Image className="padding-container" src={this.state.urlchamp[0]} rounded responsive/>
+                    </Col>
+                </Row>
                         <Modal show={boolshowchamp[0]} onHide={()=>{this.closeChamp(0)}}>
                         <Modal.Header closeButton>
                             <Modal.Title>Campeon 1</Modal.Title>
@@ -195,9 +287,7 @@ class Simulador extends Component {
                     <Row className="left-container">
                         <Col sm={0} md={0} lg={0}>
                             <Button bsSize="large" onClick={()=>{this.showItem(0,0)}}> Item 1 </Button>
-                        </Col>
-                        <Col sm={0} md={0} lg={0}>
-                            <Image src={this.state.urlitem} rounded responsive/>
+                            <Image className="padding-container" src={this.state.urlitem[0][0]} rounded responsive/>
                         </Col>
                     </Row>
                         <Modal show={boolshowitem[0][0]} onHide={()=>{this.closeItem(0,0)}}>
@@ -214,6 +304,7 @@ class Simulador extends Component {
                     
                     <Row className="left-container">
                         <Button bsSize="large" onClick={()=>{this.showItem(0,1)}}> Item 2 </Button>
+                        <Image className="padding-container" src={this.state.urlitem[0][1]} rounded responsive/>
                     </Row>
                         <Modal show={boolshowitem[0][1]} onHide={()=>{this.closeItem(0,1)}}>
                         <Modal.Header closeButton>
@@ -229,6 +320,7 @@ class Simulador extends Component {
                     
                     <Row className="left-container">
                         <Button bsSize="large" onClick={()=>{this.showItem(0,2)}}> Item 3 </Button>
+                        <Image className="padding-container" src={this.state.urlitem[0][2]} rounded responsive/>
                     </Row>
                         <Modal show={boolshowitem[0][2]} onHide={()=>{this.closeItem(0,2)}}>
                         <Modal.Header closeButton>
@@ -244,6 +336,7 @@ class Simulador extends Component {
                     
                     <Row className="left-container">
                         <Button bsSize="large" onClick={()=>{this.showItem(0,3)}}> Item 4 </Button>
+                        <Image className="padding-container" src={this.state.urlitem[0][3]} rounded responsive/>
                     </Row>
                         <Modal show={boolshowitem[0][3]} onHide={()=>{this.closeItem(0,3)}}>
                         <Modal.Header closeButton>
@@ -259,6 +352,7 @@ class Simulador extends Component {
                     
                     <Row className="left-container">
                         <Button bsSize="large" onClick={()=>{this.showItem(0,4)}}> Item 5 </Button>
+                        <Image className="padding-container" src={this.state.urlitem[0][4]} rounded responsive/>
                     </Row>
                         <Modal show={boolshowitem[0][4]} onHide={()=>{this.closeItem(0,4)}}>
                         <Modal.Header closeButton>
@@ -274,6 +368,7 @@ class Simulador extends Component {
                     
                     <Row className="left-container">
                         <Button bsSize="large" onClick={()=>{this.showItem(0,5)}}> Item 6 </Button>
+                        <Image className="padding-container" src={this.state.urlitem[0][5]} rounded responsive/>
                     </Row>
                         <Modal show={boolshowitem[0][5]} onHide={()=>{this.closeItem(0,5)}}>
                         <Modal.Header closeButton>
@@ -293,9 +388,7 @@ class Simulador extends Component {
                     <Row className="left-container">
                         <Col sm={0} md={0} lg={0}>
                             <Button bsSize="large" onClick={()=>{this.showChamp(1)}}> Campeon 2 </Button>
-                        </Col>
-                        <Col sm={0} md={0} lg={0}>
-                            <Image src={this.state.urlchamp} rounded responsive/>
+                            <Image className="padding-container" src={this.state.urlchamp[1]} rounded responsive/>
                         </Col>
                     </Row>
                         <Modal show={boolshowchamp[1]} onHide={()=>{this.closeChamp(1)}}>
@@ -312,6 +405,7 @@ class Simulador extends Component {
 
                     <Row className="left-container">
                         <Button bsSize="large" onClick={()=>{this.showItem(1,0)}}> Item 1 </Button>
+                        <Image className="padding-container" src={this.state.urlitem[1][0]} rounded responsive/>
                     </Row>
                         <Modal show={boolshowitem[1][0]} onHide={()=>{this.closeItem(1,0)}}>
                         <Modal.Header closeButton>
@@ -327,6 +421,7 @@ class Simulador extends Component {
                     
                     <Row className="left-container">
                         <Button bsSize="large" onClick={()=>{this.showItem(1,1)}}> Item 2 </Button>
+                        <Image className="padding-container" src={this.state.urlitem[1][1]} rounded responsive/>
                     </Row>
                         <Modal show={boolshowitem[1][1]} onHide={()=>{this.closeItem(1,1)}}>
                         <Modal.Header closeButton>
@@ -342,6 +437,7 @@ class Simulador extends Component {
                     
                     <Row className="left-container">
                         <Button bsSize="large" onClick={()=>{this.showItem(1,2)}}> Item 3 </Button>
+                        <Image className="padding-container" src={this.state.urlitem[1][2]} rounded responsive/>
                     </Row>
                         <Modal show={boolshowitem[1][2]} onHide={()=>{this.closeItem(0,2)}}>
                         <Modal.Header closeButton>
@@ -357,6 +453,7 @@ class Simulador extends Component {
                     
                     <Row className="left-container">
                         <Button bsSize="large" onClick={()=>{this.showItem(1,3)}}> Item 4 </Button>
+                        <Image className="padding-container" src={this.state.urlitem[1][3]} rounded responsive/>
                     </Row>
                         <Modal show={boolshowitem[1][3]} onHide={()=>{this.closeItem(0,3)}}>
                         <Modal.Header closeButton>
@@ -372,6 +469,7 @@ class Simulador extends Component {
                     
                     <Row className="left-container">
                         <Button bsSize="large" onClick={()=>{this.showItem(1,4)}}> Item 5 </Button>
+                        <Image className="padding-container" src={this.state.urlitem[1][4]} rounded responsive/>
                     </Row>
                         <Modal show={boolshowitem[1][4]} onHide={()=>{this.closeItem(1,4)}}>
                         <Modal.Header closeButton>
@@ -387,6 +485,7 @@ class Simulador extends Component {
                     
                     <Row className="left-container">
                         <Button bsSize="large" onClick={()=>{this.showItem(1,5)}}> Item 6 </Button>
+                        <Image className="padding-container" src={this.state.urlitem[1][5]} rounded responsive/>
                     </Row>
                         <Modal show={boolshowitem[1][5]} onHide={()=>{this.closeItem(1,5)}}>
                         <Modal.Header closeButton>
@@ -403,10 +502,16 @@ class Simulador extends Component {
                 </Col>
             </Row>
             
-                {this.state.attack[0] - this.state.recibe[0]}
-            <button onClick={()=> { this.calcularDamage(this.state.idchamp[0],this.state.idchamp[1],this.state.iditem[0][0],this.state.iditem[0][1],this.state.iditem[0][2],this.state.iditem[0][3],this.state.iditem[0][4],this.state.iditem[0][5],this.state.iditem[1][0],this.state.iditem[1][1],this.state.iditem[1][2],this.state.iditem[1][3],this.state.iditem[1][4],this.state.iditem[1][5]) }}>
-                Calcular
-            </button>
+            <Row>
+                <Col classname='right-container' sm={6} md={6} lg={6}>
+                    <Button onClick={()=> { this.calcularDamage(this.state.idchamp[0],this.state.idchamp[1],this.state.iditem[0][0],this.state.iditem[0][1],this.state.iditem[0][2],this.state.iditem[0][3],this.state.iditem[0][4],this.state.iditem[0][5],this.state.iditem[1][0],this.state.iditem[1][1],this.state.iditem[1][2],this.state.iditem[1][3],this.state.iditem[1][4],this.state.iditem[1][5]) }}>
+                        Calcular
+                    </Button>
+                </Col>
+                <Col classname='left-container' sm={6} md={6} lg={6}>
+                    {this.state.attack[0] - this.state.recibe[0]}
+                </Col>
+            </Row>
             
         </div>
         );

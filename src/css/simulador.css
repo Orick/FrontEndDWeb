@@ -7,3 +7,13 @@
     padding-top: 4%;
     padding-left: 5%;
 }
+
+.right-container{
+    text-align:right;
+    padding-top: 4%;
+    padding-right: 5%;
+}
+
+.padding-container{
+    padding-top: 2%;
+}
