@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Row, Col, MenuItem, Modal, Button, Image, Popover, OverlayTrigger, FormGroup, ControlLabel, HelpBlock,FormControl} from 'react-bootstrap';
+import {Row, Col, MenuItem, Modal, Button, Image, Popover, OverlayTrigger, FormGroup, ControlLabel, FormControl, DropdownButton} from 'react-bootstrap';
 import firebase from '../config/firebaseConfig';
 import '../css/simulador.css'; 
 
@@ -22,6 +22,8 @@ class Simulador extends Component {
             recibe: [],
             showBuildi: false,
             nameBuild: "",
+            buildNames:[],
+            buildData:[]
         };
 
         this.showItem = this.showItem.bind(this);
@@ -29,7 +31,6 @@ class Simulador extends Component {
         this.showChamp = this.showChamp.bind(this);
         this.closeChamp = this.closeChamp.bind(this);
         this.renderMenuChamp = this.renderMenuChamp.bind(this);
-        this.renderMenuChamp1 = this.renderMenuChamp1.bind(this);
         this.renderMenuItem = this.renderMenuItem.bind(this);
         this.selectItem = this.selectItem.bind(this);
         this.selectChamp = this.selectChamp.bind(this);
@@ -39,6 +40,9 @@ class Simulador extends Component {
         this.closeBuild = this.closeBuild.bind(this);
         this.showBuild = this.showBuild.bind(this);
         this.nameChange = this.nameChange.bind(this);
+        this.renderMenuBuilds = this.renderMenuBuilds.bind(this);
+        this.selectBuildButton = this.selectBuildButton.bind(this);
+        this.selectBuild = this.selectBuild.bind(this);
     }
     calcularDamage(champ1,champ2,iditem11,iditem12,iditem13,iditem14,iditem15,iditem16,iditem21,iditem22,iditem23,iditem24,iditem25,iditem26){
         fetch('http://localhost:8080/simulador/attack/' + champ1 + '/' + iditem11 + '/' + iditem12 + '/' + iditem13 + '/' + iditem14 + '/' + iditem15 + '/' + iditem16)
@@ -90,12 +94,6 @@ class Simulador extends Component {
 
     showBuild() {
         this.setState({ showBuildi: true});
-    }
-
-    renderMenuChamp1(champ, i) {
-        return (
-            <MenuItem eventKey={champ[0]}>{champ[1]}</MenuItem>
-        );
     }
 
     renderMenuItem(item) {
@@ -207,12 +205,7 @@ class Simulador extends Component {
                             validationState={this.getValidationState()}
                             >
                             <ControlLabel>Nombre Build</ControlLabel>
-                            <FormControl
-                                type="text"
-                                value={this.state.nameBuild}
-                                placeholder="Ingrese un nombre"
-                                onChange={this.nameChange}
-                            />
+                            <FormControl type="text" value={this.state.nameBuild} placeholder="Ingrese un nombre" onChange={this.nameChange}/>
                             <FormControl.Feedback />
                             </FormGroup>
                         </form>
@@ -225,6 +218,75 @@ class Simulador extends Component {
                 </div>
             );
         }
+    }
+
+    selectBuildButton(){
+        let user = firebase.auth().currentUser;
+        if (user) {
+            
+            fetch('http://localhost:8080/builds/' + user.uid)
+            .then(response => response.json())
+            .then(result => {
+                this.setState({
+                    buildNames: result.data
+                });
+            })
+            .catch( error => {
+                console.log("fectch error : ", error);
+            });
+
+            let {buildNames} = this.state;
+
+            return(
+                <DropdownButton bsSize="large" title="Builds" id="dropdown-size-large">
+                    {buildNames.map(this.renderMenuBuilds)}
+                </DropdownButton>
+            );
+        }
+    }
+
+    renderMenuBuilds(builds,i){
+        return (
+            <MenuItem eventKey={i} onClick={()=>{this.selectBuild(builds)}} >{builds}</MenuItem>
+        );
+    }
+
+    selectBuild(build){
+        let user = firebase.auth().currentUser;
+        if (user) {
+            fetch('http://localhost:8080/builds/obtener/' + user.uid + '/' + build)
+            .then(response => response.json())
+            .then(result => {
+                this.setState({
+                    buildData: result.data
+                });
+            })
+            .catch( error => {
+                console.log("fectch error : ", error);
+        });
+        }
+
+        let {buildData, idchamp, iditem} = this.state;
+        
+        idchamp[0] = buildData[0];
+        idchamp[1] = buildData[1];
+        iditem[0][0] = buildData[2];
+        iditem[0][1] = buildData[3];
+        iditem[0][2] = buildData[4];
+        iditem[0][3] = buildData[5];
+        iditem[0][4] = buildData[6];
+        iditem[0][5] = buildData[7];
+        iditem[1][0] = buildData[8];
+        iditem[1][1] = buildData[9];
+        iditem[1][2] = buildData[10];
+        iditem[1][3] = buildData[11];
+        iditem[1][4] = buildData[12];
+        iditem[1][5] = buildData[13];
+        
+        this.setState({
+            idchamp: idchamp,
+            iditem: iditem
+        });
     }
 
     componentDidMount(){
@@ -260,6 +322,7 @@ class Simulador extends Component {
                     {this.saveBuildButton()}
                 </Col>
                 <Col classname='left-container' sm={6} md={6} lg={6}>
+                    {this.selectBuildButton()}
                 </Col>
             </Row>
             <Row>
