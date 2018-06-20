@@ -9,7 +9,7 @@ class Simulador extends Component {
 
         this.state = {
             idchamp: [1, 2],
-            urlchamp: ["http://ddragon.leagueoflegends.com/cdn/8.10.1/img/champion/Annie.png", "http://ddragon.leagueoflegends.com/cdn/8.10.1/img/champion/Olaf.png"],
+            urlchamp: ["http://ddragon.leagueoflegends.com/cdn/8.11.1/img/champion/Annie.png", "http://ddragon.leagueoflegends.com/cdn/8.11.1/img/champion/Olaf.png"],
             boolshowchamp: [false, false],
             iditem: [[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0]],
             urlitem: [["", "", "", "", "", ""],["", "", "", "", "", ""]],
@@ -41,8 +41,9 @@ class Simulador extends Component {
         this.showBuild = this.showBuild.bind(this);
         this.nameChange = this.nameChange.bind(this);
         this.renderMenuBuilds = this.renderMenuBuilds.bind(this);
-        this.selectBuildButton = this.selectBuildButton.bind(this);
         this.selectBuild = this.selectBuild.bind(this);
+        this.userLoggedBuilds = this.userLoggedBuilds.bind(this);
+        this.updateBuilds = this.updateBuilds.bind(this);
     }
     calcularDamage(champ1,champ2,iditem11,iditem12,iditem13,iditem14,iditem15,iditem16,iditem21,iditem22,iditem23,iditem24,iditem25,iditem26){
         fetch('http://localhost:8080/simulador/attack/' + champ1 + '/' + iditem11 + '/' + iditem12 + '/' + iditem13 + '/' + iditem14 + '/' + iditem15 + '/' + iditem16)
@@ -123,7 +124,7 @@ class Simulador extends Component {
         
         return (
             <OverlayTrigger trigger={['hover', 'focus']} placement="left" overlay={popover}>
-            <Image src={'http://ddragon.leagueoflegends.com/cdn/8.10.1/img/champion/' + champ[2]} rounded responsive onClick={()=>{this.selectChamp(champ[0], 'http://ddragon.leagueoflegends.com/cdn/8.10.1/img/champion/' + champ[2], actualChampButton)}}/>
+            <Image src={'http://ddragon.leagueoflegends.com/cdn/8.11.1/img/champion/' + champ[2]} rounded responsive onClick={()=>{this.selectChamp(champ[0], 'http://ddragon.leagueoflegends.com/cdn/8.11.1/img/champion/' + champ[2], actualChampButton)}}/>
             </OverlayTrigger>
         );
     }
@@ -162,7 +163,7 @@ class Simulador extends Component {
                 fetch('http://localhost:8080/builds/',{
                     method: 'POST',
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                    body: "iduser="+user.uid+'&name='+this.state.nameBuild+'&idchamp1='+this.state.idchamp[0]+'&idchamp2='+this.state.idchamp[1]+'&iditem11='+this.state.iditem[0][0]+'&iditem12='+this.state.iditem[0][1]+'&iditem13='+this.state.iditem[0][2]+'&iditem14='+this.state.iditem[0][3]+'&iditem15='+this.state.iditem[0][4]+'&iditem16='+this.state.iditem[0][5]+'&iditem21='+this.state.iditem[1][0]+'&iditem22='+this.state.iditem[1][1]+'&iditem23='+this.state.iditem[1][2]+'&iditem24='+this.state.iditem[1][3]+'&iditem25='+this.state.iditem[1][4]+'&iditem26='+this.state.iditem[1][5]
+                    body: "iduser="+user.uid+'&name='+this.state.nameBuild+'&idchamp1='+this.state.idchamp[0]+'&idchamp2='+this.state.idchamp[1]+'&iditem11='+this.state.iditem[0][0]+'&iditem12='+this.state.iditem[0][1]+'&iditem13='+this.state.iditem[0][2]+'&iditem14='+this.state.iditem[0][3]+'&iditem15='+this.state.iditem[0][4]+'&iditem16='+this.state.iditem[0][5]+'&iditem21='+this.state.iditem[1][0]+'&iditem22='+this.state.iditem[1][1]+'&iditem23='+this.state.iditem[1][2]+'&iditem24='+this.state.iditem[1][3]+'&iditem25='+this.state.iditem[1][4]+'&iditem26='+this.state.iditem[1][5]+'&image1='+this.state.urlchamp[0]+'&image2='+this.state.urlchamp[1]
                 })
                 .then(res => res.json())
                 .then(result => {
@@ -220,10 +221,20 @@ class Simulador extends Component {
         }
     }
 
-    selectBuildButton(){
+    userLoggedBuilds(buildNames){
         let user = firebase.auth().currentUser;
         if (user) {
-            
+            return(
+                <DropdownButton bsSize="large" title="Builds" id="dropdown-size-large" onClick={()=>{this.updateBuilds()}}>
+                    {buildNames.map(this.renderMenuBuilds)}
+                </DropdownButton>
+            );
+        }
+    }
+
+    updateBuilds(){
+        let user = firebase.auth().currentUser;
+        if (user) {
             fetch('http://localhost:8080/builds/' + user.uid)
             .then(response => response.json())
             .then(result => {
@@ -234,14 +245,6 @@ class Simulador extends Component {
             .catch( error => {
                 console.log("fectch error : ", error);
             });
-
-            let {buildNames} = this.state;
-
-            return(
-                <DropdownButton bsSize="large" title="Builds" id="dropdown-size-large">
-                    {buildNames.map(this.renderMenuBuilds)}
-                </DropdownButton>
-            );
         }
     }
 
@@ -266,7 +269,7 @@ class Simulador extends Component {
         });
         }
 
-        let {buildData, idchamp, iditem} = this.state;
+        let {buildData, idchamp, iditem, urlchamp, urlitem} = this.state;
         
         idchamp[0] = buildData[0];
         idchamp[1] = buildData[1];
@@ -282,11 +285,30 @@ class Simulador extends Component {
         iditem[1][3] = buildData[11];
         iditem[1][4] = buildData[12];
         iditem[1][5] = buildData[13];
+        urlchamp[0] = buildData[14];
+        urlchamp[1] = buildData[15];
+        urlitem[0][0] = "http://ddragon.leagueoflegends.com/cdn/8.11.1/img/item/" + buildData[2] + ".png";
+        urlitem[0][1] = "http://ddragon.leagueoflegends.com/cdn/8.11.1/img/item/" + buildData[3] + ".png";
+        urlitem[0][2] = "http://ddragon.leagueoflegends.com/cdn/8.11.1/img/item/" + buildData[4] + ".png";
+        urlitem[0][3] = "http://ddragon.leagueoflegends.com/cdn/8.11.1/img/item/" + buildData[5] + ".png";
+        urlitem[0][4] = "http://ddragon.leagueoflegends.com/cdn/8.11.1/img/item/" + buildData[6] + ".png";
+        urlitem[0][5] = "http://ddragon.leagueoflegends.com/cdn/8.11.1/img/item/" + buildData[7] + ".png";
+        urlitem[1][0] = "http://ddragon.leagueoflegends.com/cdn/8.11.1/img/item/" + buildData[8] + ".png";
+        urlitem[1][1] = "http://ddragon.leagueoflegends.com/cdn/8.11.1/img/item/" + buildData[9] + ".png";
+        urlitem[1][2] = "http://ddragon.leagueoflegends.com/cdn/8.11.1/img/item/" + buildData[10] + ".png";
+        urlitem[1][3] = "http://ddragon.leagueoflegends.com/cdn/8.11.1/img/item/" + buildData[11] + ".png";
+        urlitem[1][4] = "http://ddragon.leagueoflegends.com/cdn/8.11.1/img/item/" + buildData[12] + ".png";
+        urlitem[1][5] = "http://ddragon.leagueoflegends.com/cdn/8.11.1/img/item/" + buildData[13] + ".png";
         
         this.setState({
             idchamp: idchamp,
-            iditem: iditem
+            iditem: iditem,
+            urlchamp: urlchamp,
+            urlitem: urlitem
         });
+
+        console.log(this.state.idchamp);
+        console.log(this.state.iditem);
     }
 
     componentDidMount(){
@@ -311,10 +333,24 @@ class Simulador extends Component {
         .catch( error => {
             console.log("fectch error : ", error);
         });
+
+        let user = firebase.auth().currentUser;
+        if (user) {
+            fetch('http://localhost:8080/builds/' + user.uid)
+            .then(response => response.json())
+            .then(result => {
+                this.setState({
+                    buildNames: result.data
+                });
+            })
+            .catch( error => {
+                console.log("fectch error : ", error);
+            });
+        }
     }
 
     render() {
-        const {boolshowchamp,boolshowitem,itemdata,champdata} = this.state;
+        const {boolshowchamp,boolshowitem,itemdata,champdata,buildNames} = this.state;
         return (
         <div>
             <Row>
@@ -322,7 +358,7 @@ class Simulador extends Component {
                     {this.saveBuildButton()}
                 </Col>
                 <Col classname='left-container' sm={6} md={6} lg={6}>
-                    {this.selectBuildButton()}
+                    {this.userLoggedBuilds(buildNames)}
                 </Col>
             </Row>
             <Row>
