@@ -96,7 +96,7 @@ class Summoner extends Component {
             fetch('http://localhost:8080/champions/imagen/'+idChamp)
             .then(res => res.json())
             .then(result => {
-                resolve({link:'http://ddragon.leagueoflegends.com/cdn/8.10.1/img/champion/' + result.data, idChamp:idChamp});
+                resolve({link:'http://ddragon.leagueoflegends.com/cdn/8.11.1/img/champion/' + result.data, idChamp:idChamp});
             })
             .catch( error => {
                 reject({link:imageMarco, idChamp:idChamp});
@@ -128,7 +128,7 @@ class Summoner extends Component {
 
     getItemLink(id){
         if(id !== 0 ){
-            return 'http://ddragon.leagueoflegends.com/cdn/8.10.1/img/item/'+id+'.png';
+            return 'http://ddragon.leagueoflegends.com/cdn/8.11.1/img/item/'+id+'.png';
         }else{
             return imageMarco;
         }
@@ -344,7 +344,7 @@ class Summoner extends Component {
                             <Row>
                                 <Col sm={3} md={3} lg={3} style={{textAlign: 'center', marginTop:'6px'}}>
                                     <Image
-                                        src={'http://ddragon.leagueoflegends.com/cdn/8.10.1/img/profileicon/'+summoner.profileIconId+'.png'}
+                                        src={'http://ddragon.leagueoflegends.com/cdn/8.11.1/img/profileicon/'+summoner.profileIconId+'.png'}
                                         style={{width: '110px', height: '110px'}}
                                         circle
                                     />

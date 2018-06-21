@@ -58,7 +58,8 @@ class Login extends Component {
 
     loginShow(){
         this.setState({
-            showLogin: true
+            showLogin: true,
+            visibleM: 'hidden'
         });
     }
     loginClose(){

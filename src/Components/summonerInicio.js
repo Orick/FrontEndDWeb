@@ -145,34 +145,36 @@ class summonerInicio extends Component {
                                                                 data.summonerLeague.map((d,ind )=> {
                                                                     return (
                                                                         <div key={ind}>
-                                                                            <Grid  onClick={()=>{this.clickSummoner(data.name,data.server)}}>
+                                                                            <Grid >
                                                                                 <Row>
-                                                                                    <Col sm={2} md={2} lg={2} style={{textAlign: 'center', marginTop:'6px'}}>
-                                                                                        <Image
-                                                                                            src={'http://ddragon.leagueoflegends.com/cdn/8.10.1/img/profileicon/'+data.profileIconId+'.png'}
-                                                                                            style={{
-                                                                                                width: '110px',
-                                                                                                height: '110px',
-                                                                                            }}
-                                                                                            circle
-                                                                                        />
-                                                                                    </Col>
-                                                                                    <Col sm={2} md={2} lg={2} style={{textAlign: 'center'}}>
-                                                                                        <h2>{data.name}</h2>
-                                                                                        <h4 style={{marginTop: '0px'}} >Nivel: {data.summonerLevel}</h4>
-                                                                                    </Col>
-                                                                                    <Col sm={2} md={2} lg={2} style={{textAlign: 'center'}}>
-                                                                                        <h4 style={{marginTop: '0px'}}>SoloQ</h4>
-                                                                                        <p>{d.soloTier} {d.soloRank}</p>
-                                                                                        <p>Victorias: {d.soloWins}</p>
-                                                                                        <p>Derrotas: {d.soloLosses}</p>
-                                                                                    </Col>
-                                                                                    <Col sm={2} md={2} lg={2} style={{textAlign: 'center'}}>
-                                                                                        <h4 style={{marginTop: '0px'}}>Flex</h4>
-                                                                                        <p>{d.flexTier} {d.flexRank}  </p>
-                                                                                        <p>Victorias: {d.flexWins}  </p>
-                                                                                        <p>Derrotas: {d.flexLosses}</p>
-                                                                                    </Col>
+                                                                                    <div onClick={()=>{this.clickSummoner(data.name,data.server)}}>
+                                                                                        <Col sm={2} md={2} lg={2} style={{textAlign: 'center', marginTop:'6px'}}>
+                                                                                            <Image
+                                                                                                src={'http://ddragon.leagueoflegends.com/cdn/8.11.1/img/profileicon/'+data.profileIconId+'.png'}
+                                                                                                style={{
+                                                                                                    width: '110px',
+                                                                                                    height: '110px',
+                                                                                                }}
+                                                                                                circle
+                                                                                            />
+                                                                                        </Col>
+                                                                                        <Col sm={2} md={2} lg={2} style={{textAlign: 'center'}}>
+                                                                                            <h2>{data.name}</h2>
+                                                                                            <h4 style={{marginTop: '0px'}} >Nivel: {data.summonerLevel}</h4>
+                                                                                        </Col>
+                                                                                        <Col sm={2} md={2} lg={2} style={{textAlign: 'center'}}>
+                                                                                            <h4 style={{marginTop: '0px'}}>SoloQ</h4>
+                                                                                            <p>{d.soloTier} {d.soloRank}</p>
+                                                                                            <p>Victorias: {d.soloWins}</p>
+                                                                                            <p>Derrotas: {d.soloLosses}</p>
+                                                                                        </Col>
+                                                                                        <Col sm={2} md={2} lg={2} style={{textAlign: 'center'}}>
+                                                                                            <h4 style={{marginTop: '0px'}}>Flex</h4>
+                                                                                            <p>{d.flexTier} {d.flexRank}  </p>
+                                                                                            <p>Victorias: {d.flexWins}  </p>
+                                                                                            <p>Derrotas: {d.flexLosses}</p>
+                                                                                        </Col>
+                                                                                    </div>
                                                                                     <Col sm={3} md={3} lg={3}>
                                                                                         <Button bsStyle="danger" bsSize="xs" className="pull-right" onClick={()=>{this.borrorSeguir(data.summonerId)}}>X</Button>
                                                                                     </Col>
