@@ -110,7 +110,7 @@ class Stats extends Component {
                                             </Col>
                                             <Col sm={3} md={3} lg={3} style={{textAlign: 'center'}}>
                                                 <h2>{this.getChampionName(stats.champId)}</h2>
-                                                <h3>Role: {stats.role)}</h3>
+                                                <h3>Role: {stats.role}</h3>
                                             </Col>
                                             <Col sm={3} md={3} lg={3} style={{textAlign: 'center'}}>
                                                 <Button bsStyle="primary" onClick={this.handleShow}>View Champ Stats</Button>
