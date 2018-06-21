@@ -1,0 +1,31 @@
+.threecolmain tr: {
+	background-color: #0000CD;
+}
+
+.threecolmain td: {
+    text-align: center;
+    width: 33%;
+}
+
+.threecoltwo tr: {
+	background-color: #3333ff;
+}
+
+.threecoltwo td: {
+    text-align: center;
+    width: 33%;
+}
+
+.threecoltwo tr: {
+	background-color: #3333ff;
+}
+
+.fourcol td:nth-child(odd) {
+    text-align: center;
+    width: 16%
+}
+
+.fourcol td:nth-child(even) {
+    text-align: center;
+    width: 33%
+}
