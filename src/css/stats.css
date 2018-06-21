@@ -1,0 +1,18 @@
+.threecol td:nth-child(1),
+.threecol td:nth-child(2),
+.threecol td:nth-child(3) {
+    text-align: center;
+    width: 33%;
+}
+
+.fourcol td:nth-child(1),
+.fourcol td:nth-child(3) {
+    text-align: center;
+    width: 16%
+}
+
+.fourcol td:nth-child(2),
+.fourcol td:nth-child(4) {
+    text-align: center;
+    width: 33%
+}
