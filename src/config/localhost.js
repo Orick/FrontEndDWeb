@@ -1,3 +1,3 @@
-const localhost = '192.168.43.115';
+const localhost = 'gentle-ocean-67033.herokuapp.com';
 
 module.exports = localhost;

@@ -40,24 +40,24 @@ class SearchBar extends Component {
         const server = this.state.server;
         if( summoner && server) {
 
-            fetch('http://' + localhost + ':8080/summoner/find/'+server+'/'+summoner)
+            fetch('http://' + localhost + '/summoner/find/'+server+'/'+summoner)
                 .then(response => response.json())
                 .then(resultSummoner => {
                     data.summoner = resultSummoner.data;
                     if(resultSummoner.status === 1){
 
-                        fetch('http://' + localhost + ':8080/league/find/'+server+'/'+resultSummoner.data.summonerId)
+                        fetch('http://' + localhost + '/league/find/'+server+'/'+resultSummoner.data.summonerId)
                         .then(responseLeague => responseLeague.json())
                         .then(resultLeague => {
                             data.league = resultLeague.data;
-                            //http://' + localhost + ':8080/matchlist/find/la2/118550
+                            //http://' + localhost + '/matchlist/find/la2/118550
 
-                            fetch('http://' + localhost + ':8080/matchlist/find/'+server+'/'+resultSummoner.data.accountId)
+                            fetch('http://' + localhost + '/matchlist/find/'+server+'/'+resultSummoner.data.accountId)
                             .then(responseMatchList=> responseMatchList.json())
                             .then(resultMatchList=> {
                                 // /allMatch/:server/:accountId
 
-                                fetch('http://' + localhost + ':8080/matchlist/allMatch/'+server+'/'+resultSummoner.data.accountId)
+                                fetch('http://' + localhost + '/matchlist/allMatch/'+server+'/'+resultSummoner.data.accountId)
                                 .then(responseMatchListFinal => responseMatchListFinal.json())
                                 .then(resultMatchListFinal => {
                                     data.matchlist = resultMatchListFinal.data[0].sumlist;
