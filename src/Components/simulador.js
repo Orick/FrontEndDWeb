@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {Row, Col, MenuItem, Modal, Button, Image, Popover, OverlayTrigger, FormGroup, ControlLabel, FormControl, DropdownButton} from 'react-bootstrap';
 import firebase from '../config/firebaseConfig';
 import '../css/simulador.css'; 
+const localhost = require('../config/localhost');
 
 class Simulador extends Component {
     constructor(props){
@@ -46,10 +47,10 @@ class Simulador extends Component {
         this.updateBuilds = this.updateBuilds.bind(this);
     }
     calcularDamage(champ1,champ2,iditem11,iditem12,iditem13,iditem14,iditem15,iditem16,iditem21,iditem22,iditem23,iditem24,iditem25,iditem26){
-        fetch('http://localhost:8080/simulador/attack/' + champ1 + '/' + iditem11 + '/' + iditem12 + '/' + iditem13 + '/' + iditem14 + '/' + iditem15 + '/' + iditem16)
+        fetch('http://' + localhost + ':8080/simulador/attack/' + champ1 + '/' + iditem11 + '/' + iditem12 + '/' + iditem13 + '/' + iditem14 + '/' + iditem15 + '/' + iditem16)
         .then(response => response.json())
         .then(attack => {
-            fetch('http://localhost:8080/simulador/recibe/' + champ2 + '/' + iditem21 + '/' + iditem22 + '/' + iditem23 + '/' + iditem24 + '/' + iditem25 + '/' + iditem26)
+            fetch('http://' + localhost + ':8080/simulador/recibe/' + champ2 + '/' + iditem21 + '/' + iditem22 + '/' + iditem23 + '/' + iditem24 + '/' + iditem25 + '/' + iditem26)
             .then(response => response.json())
             .then(recibe => {
                 this.setState({recibe: recibe.data, attack: attack.data});
@@ -160,7 +161,7 @@ class Simulador extends Component {
         if (user) {
             user.getIdToken(true)
             .then(Token =>{
-                fetch('http://localhost:8080/builds/',{
+                fetch('http://' + localhost + ':8080/builds/',{
                     method: 'POST',
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                     body: "iduser="+user.uid+'&name='+this.state.nameBuild+'&idchamp1='+this.state.idchamp[0]+'&idchamp2='+this.state.idchamp[1]+'&iditem11='+this.state.iditem[0][0]+'&iditem12='+this.state.iditem[0][1]+'&iditem13='+this.state.iditem[0][2]+'&iditem14='+this.state.iditem[0][3]+'&iditem15='+this.state.iditem[0][4]+'&iditem16='+this.state.iditem[0][5]+'&iditem21='+this.state.iditem[1][0]+'&iditem22='+this.state.iditem[1][1]+'&iditem23='+this.state.iditem[1][2]+'&iditem24='+this.state.iditem[1][3]+'&iditem25='+this.state.iditem[1][4]+'&iditem26='+this.state.iditem[1][5]+'&image1='+this.state.urlchamp[0]+'&image2='+this.state.urlchamp[1]
@@ -235,7 +236,7 @@ class Simulador extends Component {
     updateBuilds(){
         let user = firebase.auth().currentUser;
         if (user) {
-            fetch('http://localhost:8080/builds/' + user.uid)
+            fetch('http://' + localhost + ':8080/builds/' + user.uid)
             .then(response => response.json())
             .then(result => {
                 this.setState({
@@ -257,7 +258,7 @@ class Simulador extends Component {
     selectBuild(build){
         let user = firebase.auth().currentUser;
         if (user) {
-            fetch('http://localhost:8080/builds/obtener/' + user.uid + '/' + build)
+            fetch('http://' + localhost + ':8080/builds/obtener/' + user.uid + '/' + build)
             .then(response => response.json())
             .then(result => {
                 this.setState({
@@ -312,7 +313,7 @@ class Simulador extends Component {
     }
 
     componentDidMount(){
-        fetch('http://localhost:8080/items/data/basic')
+        fetch('http://' + localhost + ':8080/items/data/basic')
         .then(response => response.json())
         .then(result => {
             this.setState({
@@ -323,7 +324,7 @@ class Simulador extends Component {
             console.log("fectch error : ", error);
         });
 
-        fetch('http://localhost:8080/champions/data/basic')
+        fetch('http://' + localhost + ':8080/champions/data/basic')
         .then(response => response.json())
         .then(result => {
             this.setState({
@@ -336,7 +337,7 @@ class Simulador extends Component {
 
         let user = firebase.auth().currentUser;
         if (user) {
-            fetch('http://localhost:8080/builds/' + user.uid)
+            fetch('http://' + localhost + ':8080/builds/' + user.uid)
             .then(response => response.json())
             .then(result => {
                 this.setState({

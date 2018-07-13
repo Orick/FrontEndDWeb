@@ -3,6 +3,7 @@ import { Grid, Row, Col, Panel, ListGroup, ListGroupItem, Button, Image } from '
 import imageMarco from '../image/marco.png'
 import firebase from '../config/firebaseConfig';
 import store from './redux/store'
+const localhost = require('../config/localhost');
 
 class Summoner extends Component {
     constructor(props){
@@ -93,7 +94,7 @@ class Summoner extends Component {
 
     async getChamptionLink(idChamp){
         return new Promise((resolve,reject)=> {
-            fetch('http://localhost:8080/champions/imagen/'+idChamp)
+            fetch('http://' + localhost + ':8080/champions/imagen/'+idChamp)
             .then(res => res.json())
             .then(result => {
                 resolve({link:'http://ddragon.leagueoflegends.com/cdn/8.11.1/img/champion/' + result.data, idChamp:idChamp});
@@ -154,7 +155,7 @@ class Summoner extends Component {
         if (user) {
             user.getIdToken(true)
             .then(Token =>{
-                fetch('http://localhost:8080/assocciatedAccounts/assig',{
+                fetch('http://' + localhost + ':8080/assocciatedAccounts/assig',{
                     method: 'POST',
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                     body: "token="+Token+'&summonerid='+summonerId
@@ -168,7 +169,7 @@ class Summoner extends Component {
                                 textButton: 'Ya sigues a este summoner'
                             });
                         }else{
-                            fetch('http://localhost:8080/assocciatedAccounts/get',{
+                            fetch('http://' + localhost + ':8080/assocciatedAccounts/get',{
                                 method: 'POST',
                                 headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                                 body: "token="+Token
@@ -222,21 +223,21 @@ class Summoner extends Component {
         });
         console.log('Actualizar', summonerId, server,name,accountId);
 
-        fetch('http://localhost:8080/summoner/update/'+server+'/'+name)
+        fetch('http://' + localhost + ':8080/summoner/update/'+server+'/'+name)
         .then(res => res.json())
         .then(resultUpdateSummoner => {
             if( resultUpdateSummoner.status === 1){
                 console.log(resultUpdateSummoner);
-                fetch('http://localhost:8080/league/update/'+server+'/'+summonerId)
+                fetch('http://' + localhost + ':8080/league/update/'+server+'/'+summonerId)
                 .then(res => res.json())
                 .then(resultUpdateLeague=> {
                     if( resultUpdateLeague.status === 1){
                         console.log(resultUpdateLeague);
-                        fetch('http://localhost:8080/matchlist/find/'+server+'/'+accountId)
+                        fetch('http://' + localhost + ':8080/matchlist/find/'+server+'/'+accountId)
                         .then(res => res.json())
                         .then(resultUpdateMatch1=> {
                             if( resultUpdateMatch1.status === 1){
-                                fetch('http://localhost:8080/matchlist/allMatch/'+server+'/'+accountId)
+                                fetch('http://' + localhost + ':8080/matchlist/allMatch/'+server+'/'+accountId)
                                 .then(responseMatchListFinal => responseMatchListFinal.json())
                                 .then(resultMatchListFinal => {
                                     if(resultMatchListFinal.status === 1){

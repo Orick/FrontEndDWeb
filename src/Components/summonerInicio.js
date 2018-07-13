@@ -3,6 +3,7 @@ import { Grid, Row, Col, Panel, ListGroup, ListGroupItem, Button, Image } from '
 import firebase from '../config/firebaseConfig';
 import store from './redux/store';
 import { Redirect } from 'react-router-dom';
+const localhost = require('../config/localhost');
 
 
 class summonerInicio extends Component {
@@ -32,7 +33,7 @@ class summonerInicio extends Component {
     borrorSeguir(summonerId){
         firebase.auth().currentUser.getIdToken()
             .then(Token => {
-                fetch('http://localhost:8080/assocciatedAccounts/delete',{
+                fetch('http://' + localhost + ':8080/assocciatedAccounts/delete',{
                     method: 'POST',
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                     body: "token="+Token+"&summonerId="+summonerId
@@ -40,7 +41,7 @@ class summonerInicio extends Component {
                 .then(res => res.json())
                 .then(result => {
                     if(result.description === 'delete ok'){
-                        fetch('http://localhost:8080/assocciatedAccounts/get',{
+                        fetch('http://' + localhost + ':8080/assocciatedAccounts/get',{
                             method: 'POST',
                             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                             body: "token="+Token
@@ -71,24 +72,24 @@ class summonerInicio extends Component {
         });
 
         let data = {};
-        fetch('http://localhost:8080/summoner/find/'+server+'/'+summoner)
+        fetch('http://' + localhost + ':8080/summoner/find/'+server+'/'+summoner)
         .then(response => response.json())
         .then(resultSummoner => {
             data.summoner = resultSummoner.data;
             if(resultSummoner.status === 1){
 
-                fetch('http://localhost:8080/league/find/'+server+'/'+resultSummoner.data.summonerId)
+                fetch('http://' + localhost + ':8080/league/find/'+server+'/'+resultSummoner.data.summonerId)
                 .then(responseLeague => responseLeague.json())
                 .then(resultLeague => {
                     data.league = resultLeague.data;
-                    //http://localhost:8080/matchlist/find/la2/118550
+                    //http://' + localhost + ':8080/matchlist/find/la2/118550
 
-                    fetch('http://localhost:8080/matchlist/find/'+server+'/'+resultSummoner.data.accountId)
+                    fetch('http://' + localhost + ':8080/matchlist/find/'+server+'/'+resultSummoner.data.accountId)
                     .then(responseMatchList=> responseMatchList.json())
                     .then(resultMatchList=> {
                         // /allMatch/:server/:accountId
 
-                        fetch('http://localhost:8080/matchlist/allMatch/'+server+'/'+resultSummoner.data.accountId)
+                        fetch('http://' + localhost + ':8080/matchlist/allMatch/'+server+'/'+resultSummoner.data.accountId)
                         .then(responseMatchListFinal => responseMatchListFinal.json())
                         .then(resultMatchListFinal => {
                             data.matchlist = resultMatchListFinal.data[0].sumlist;

@@ -4,6 +4,7 @@ import firebase from '../config/firebaseConfig';
 import store from './redux/store';
 import {Nav, NavItem, Button} from 'react-bootstrap';
 import '../css/bar.css';
+const localhost = require('../config/localhost');
 
 class Login extends Component {
     constructor(props){
@@ -122,7 +123,7 @@ class Login extends Component {
             });
 
             if(Login.validateEmail(emailCrear)){
-                fetch('http://localhost:8080/assocciatedAccounts/create',{
+                fetch('http://' + localhost + ':8080/assocciatedAccounts/create',{
                     method: 'POST',
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                     body: "email="+emailCrear+"&password="+passwordCrear
@@ -257,7 +258,7 @@ class Login extends Component {
                     user.getIdToken()
                         .then(Token => {
                             console.log(Token);
-                            fetch('http://localhost:8080/assocciatedAccounts/get',{
+                            fetch('http://' + localhost + ':8080/assocciatedAccounts/get',{
                                 method: 'POST',
                                 headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                                 body: "token="+Token
